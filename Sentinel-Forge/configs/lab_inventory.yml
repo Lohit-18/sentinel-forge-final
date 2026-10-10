@@ -1,0 +1,73 @@
+# Synthetic organisation for the SentinelForge lab.
+#
+# Everything here is invented. IP addresses use private ranges (10.0.0.0/8),
+# carrier-grade NAT space (100.64.0.0/10) for "home" connections, and the
+# documentation ranges from RFC 5737 for the internet. Domain names use the
+# reserved .example and .test names (RFC 2606).
+#
+# The event generator builds activity from this file, and risk scoring uses it
+# for identity context (privileged accounts) and endpoint context (criticality).
+
+organisation: Northwind Lab (fictional)
+
+# Hours (UTC) treated as business hours for baselines and context.
+business_hours_utc: {start: 8, end: 18}
+
+internal_networks: [10.0.0.0/8]
+
+# Groups whose membership grants administrative power.
+privileged_groups: [domain admins, enterprise admins, administrators]
+
+# Accounts allowed to change privileged groups and security settings.
+authorised_admins: [adm.sam, adm.priya]
+
+identities:
+  - {user: alice.lab, department: finance, workstation: ws-fin-01}
+  - {user: bob.lab, department: finance, workstation: ws-fin-02}
+  - {user: chen.lab, department: finance, workstation: ws-fin-03}
+  - {user: dana.lab, department: hr, workstation: ws-hr-01}
+  - {user: eli.lab, department: hr, workstation: ws-hr-02}
+  - {user: farah.lab, department: sales, workstation: ws-sal-01, remote: true}
+  - {user: george.lab, department: sales, workstation: ws-sal-02, remote: true}
+  - {user: hana.lab, department: sales, workstation: ws-sal-03}
+  - {user: ivan.lab, department: engineering, workstation: ws-eng-01, remote: true}
+  - {user: jaya.lab, department: engineering, workstation: ws-eng-02}
+  - {user: kofi.lab, department: engineering, workstation: ws-eng-03}
+  - {user: lena.lab, department: engineering, workstation: ws-eng-04, remote: true}
+  - {user: mia.lab, department: it, workstation: ws-it-03}
+  - {user: adm.sam, department: it, workstation: ws-it-01, privileged: true}
+  - {user: adm.priya, department: it, workstation: ws-it-02, privileged: true}
+  - {user: svc_backup, department: it, service: true}
+  - {user: svc_web, department: it, service: true}
+
+assets:
+  # Workstations
+  - {host: ws-fin-01, role: workstation, ip: 10.20.1.11, owner: alice.lab, criticality: medium}
+  - {host: ws-fin-02, role: workstation, ip: 10.20.1.12, owner: bob.lab, criticality: medium}
+  - {host: ws-fin-03, role: workstation, ip: 10.20.1.13, owner: chen.lab, criticality: medium}
+  - {host: ws-hr-01, role: workstation, ip: 10.20.2.11, owner: dana.lab, criticality: medium}
+  - {host: ws-hr-02, role: workstation, ip: 10.20.2.12, owner: eli.lab, criticality: medium}
+  - {host: ws-sal-01, role: workstation, ip: 10.20.3.11, owner: farah.lab, criticality: low}
+  - {host: ws-sal-02, role: workstation, ip: 10.20.3.12, owner: george.lab, criticality: low}
+  - {host: ws-sal-03, role: workstation, ip: 10.20.3.13, owner: hana.lab, criticality: low}
+  - {host: ws-eng-01, role: workstation, ip: 10.20.4.11, owner: ivan.lab, criticality: medium}
+  - {host: ws-eng-02, role: workstation, ip: 10.20.4.12, owner: jaya.lab, criticality: medium}
+  - {host: ws-eng-03, role: workstation, ip: 10.20.4.13, owner: kofi.lab, criticality: medium}
+  - {host: ws-eng-04, role: workstation, ip: 10.20.4.14, owner: lena.lab, criticality: medium}
+  - {host: ws-it-01, role: workstation, ip: 10.20.5.11, owner: adm.sam, criticality: high}
+  - {host: ws-it-02, role: workstation, ip: 10.20.5.12, owner: adm.priya, criticality: high}
+  - {host: ws-it-03, role: workstation, ip: 10.20.5.13, owner: mia.lab, criticality: medium}
+  # Servers and infrastructure
+  - {host: srv-dc-01, role: domain_controller, ip: 10.10.0.10, criticality: critical}
+  - {host: srv-file-01, role: server, ip: 10.10.0.20, criticality: high}
+  - {host: srv-backup-01, role: server, ip: 10.10.0.30, criticality: medium}
+  - {host: srv-app-01, role: server, ip: 10.10.0.40, criticality: high}
+  - {host: srv-vpn-01, role: vpn_gateway, ip: 10.10.0.5, criticality: high}
+  - {host: app-portal-01, role: web_app, ip: 10.10.0.60, criticality: high}
+  - {host: fw-edge-01, role: firewall, ip: 10.10.0.1, criticality: high}
+
+# Well-known external services contacted during normal work.
+known_destinations:
+  - {domain: updates.example.com, ip: 192.0.2.10, port: 443, purpose: software updates}
+  - {domain: saas.example.com, ip: 192.0.2.20, port: 443, purpose: business software}
+  - {domain: mail.example.org, ip: 192.0.2.30, port: 443, purpose: email}

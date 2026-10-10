@@ -1,0 +1,358 @@
+<title>SentinelForge Overview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<style>
+/* Dark-first SOC console: a navy command surface, cyan as the system accent,
+   semantic status colors reserved for build state. Validated categorical hues
+   (dataviz reference palette, dark column) carry the event-mix chart. */
+:root {
+  color-scheme: dark;
+  --bg: #0a0f1c; --bg2: #0c1324;
+  --panel: #111a2e; --panel2: #16233c; --line: #243352; --line-soft: #1b2944;
+  --ink: #e8edf7; --ink-dim: #9fb0cc; --ink-mute: #6b7c9b;
+  --accent: #42d4c4; --accent2: #6aa5ff;
+  --ok: #4fd08a; --ok-bg: #11291e; --next: #ffc24d; --next-bg: #2e2510; --idle: #3a4a68; --idle-bg: #141f33;
+  --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181;
+  --sans: "Inter", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Consolas, monospace;
+  --glow: 0 0 0 1px rgba(66,212,196,.12), 0 8px 30px -12px rgba(0,0,0,.6);
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    color-scheme: light;
+    --bg: #eef2f8; --bg2: #e7edf6;
+    --panel: #ffffff; --panel2: #f3f6fb; --line: #d3dcea; --line-soft: #e3e9f3;
+    --ink: #10192c; --ink-dim: #45577a; --ink-mute: #76859e;
+    --accent: #0f9d8e; --accent2: #2f6fe0;
+    --ok: #0f8f52; --ok-bg: #e2f5ea; --next: #a9710a; --next-bg: #faf0d8; --idle: #9aa9c2; --idle-bg: #eef2f8;
+    --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100; --s5: #e87ba4;
+    --glow: 0 0 0 1px rgba(15,157,142,.14), 0 10px 30px -16px rgba(20,40,80,.35);
+  }
+}
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: #eef2f8; --bg2: #e7edf6;
+  --panel: #ffffff; --panel2: #f3f6fb; --line: #d3dcea; --line-soft: #e3e9f3;
+  --ink: #10192c; --ink-dim: #45577a; --ink-mute: #76859e;
+  --accent: #0f9d8e; --accent2: #2f6fe0;
+  --ok: #0f8f52; --ok-bg: #e2f5ea; --next: #a9710a; --next-bg: #faf0d8; --idle: #9aa9c2; --idle-bg: #eef2f8;
+  --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100; --s5: #e87ba4;
+  --glow: 0 0 0 1px rgba(15,157,142,.14), 0 10px 30px -16px rgba(20,40,80,.35);
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink); font-family: var(--sans);
+  font-size: 15px; line-height: 1.55;
+  background-image: radial-gradient(1200px 500px at 15% -5%, rgba(66,212,196,.07), transparent 60%),
+                    radial-gradient(1000px 500px at 95% 0%, rgba(106,165,255,.07), transparent 55%);
+}
+.wrap { max-width: 1080px; margin: 0 auto; padding-inline: 20px; padding-block: 28px 56px; }
+h1, h2, h3 { margin: 0; line-height: 1.15; text-wrap: balance; }
+.mono { font-family: var(--mono); }
+.dim { color: var(--ink-dim); } .mute { color: var(--ink-mute); }
+a { color: var(--accent); text-decoration: none; }
+
+/* header */
+.head { display: flex; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
+.mark { width: 52px; height: 52px; flex: none; border-radius: 13px; display: grid; place-items: center;
+        background: linear-gradient(145deg, #13233f, #0c1526); border: 1px solid var(--line);
+        box-shadow: var(--glow); }
+.mark svg { width: 28px; height: 28px; }
+.head .title { flex: 1 1 260px; min-width: 0; }
+.eyebrow { font-family: var(--mono); font-size: 11.5px; letter-spacing: .16em; text-transform: uppercase; color: var(--accent); }
+h1 { font-size: clamp(27px, 4.5vw, 40px); font-weight: 700; letter-spacing: -.02em; margin-top: 3px; }
+.tagline { color: var(--ink-dim); margin-top: 7px; max-width: 62ch; font-size: 15px; }
+.head .side { display: flex; flex-direction: column; gap: 8px; align-items: flex-end; }
+.pill { font-family: var(--mono); font-size: 12px; padding: 5px 11px; border-radius: 99px; white-space: nowrap;
+        border: 1px solid; display: inline-flex; gap: 7px; align-items: center; }
+.pill.live { color: var(--ok); border-color: color-mix(in srgb, var(--ok) 45%, transparent); background: var(--ok-bg); }
+.dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; box-shadow: 0 0 8px currentColor; }
+.repo { font-family: var(--mono); font-size: 12.5px; padding: 7px 13px; border-radius: 9px; border: 1px solid var(--line);
+        background: var(--panel); color: var(--ink); display: inline-flex; gap: 8px; align-items: center; }
+.repo:hover { border-color: var(--accent); }
+
+.badges { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 18px; }
+.badge { font-family: var(--mono); font-size: 11.5px; border-radius: 6px; overflow: hidden; display: inline-flex; border: 1px solid var(--line-soft); }
+.badge b { background: var(--panel2); color: var(--ink-dim); padding: 3px 8px; font-weight: 500; }
+.badge span { padding: 3px 8px; font-weight: 600; }
+.b-green span { background: color-mix(in srgb, var(--ok) 22%, var(--panel)); color: var(--ok); }
+.b-blue span { background: color-mix(in srgb, var(--accent2) 22%, var(--panel)); color: var(--accent2); }
+.b-cyan span { background: color-mix(in srgb, var(--accent) 20%, var(--panel)); color: var(--accent); }
+.b-amber span { background: color-mix(in srgb, var(--next) 22%, var(--panel)); color: var(--next); }
+
+section { margin-top: 26px; }
+.sec-label { font-family: var(--mono); font-size: 11.5px; letter-spacing: .14em; text-transform: uppercase;
+             color: var(--ink-mute); margin-bottom: 11px; display: flex; align-items: center; gap: 10px; }
+.sec-label::after { content: ""; flex: 1; height: 1px; background: var(--line-soft); }
+
+/* KPI tiles */
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+.kpi { background: var(--panel); border: 1px solid var(--line); border-radius: 13px; padding: 15px 16px; position: relative; overflow: hidden; }
+.kpi::before { content: ""; position: absolute; inset: 0 auto 0 0; width: 3px; background: var(--accent); opacity: .8; }
+.kpi .n { font-family: var(--mono); font-size: 30px; font-weight: 700; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+.kpi .l { font-size: 12.5px; color: var(--ink-dim); margin-top: 2px; }
+.kpi .s { font-size: 11px; color: var(--ink-mute); margin-top: 6px; font-family: var(--mono); }
+.kpi.alt::before { background: var(--accent2); }
+.kpi.good::before { background: var(--ok); }
+
+/* pipeline */
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 15px; padding: 18px; }
+.flow { display: flex; align-items: stretch; gap: 8px; overflow-x: auto; padding-bottom: 4px; }
+.stage { flex: 1 1 0; min-width: 104px; border-radius: 11px; padding: 12px 11px; border: 1px solid var(--line);
+         background: var(--panel2); display: flex; flex-direction: column; gap: 6px; position: relative; }
+.stage .st-i { width: 26px; height: 26px; border-radius: 8px; display: grid; place-items: center; font-size: 14px; }
+.stage .st-n { font-weight: 600; font-size: 13px; }
+.stage .st-d { font-size: 11px; color: var(--ink-mute); font-family: var(--mono); }
+.stage.done { border-color: color-mix(in srgb, var(--accent) 50%, transparent); background: color-mix(in srgb, var(--accent) 10%, var(--panel2)); }
+.stage.done .st-i { background: color-mix(in srgb, var(--accent) 22%, transparent); color: var(--accent); }
+.stage.todo .st-i { background: var(--idle-bg); color: var(--idle); }
+.stage.todo { opacity: .8; }
+.stage .tag { position: absolute; top: 9px; right: 9px; font-family: var(--mono); font-size: 9px; letter-spacing: .05em;
+              text-transform: uppercase; padding: 1px 5px; border-radius: 4px; }
+.stage.done .tag { background: color-mix(in srgb, var(--accent) 20%, transparent); color: var(--accent); }
+.stage.todo .tag { background: var(--idle-bg); color: var(--ink-mute); }
+.arrow { align-self: center; color: var(--ink-mute); flex: none; font-size: 15px; }
+
+.grid2 { display: grid; grid-template-columns: 1.05fr .95fr; gap: 16px; }
+@media (max-width: 760px) { .grid2 { grid-template-columns: 1fr; } }
+
+/* roadmap */
+.rm-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px; }
+.rm-pct { font-family: var(--mono); font-weight: 700; color: var(--accent); }
+.bar { height: 8px; border-radius: 99px; background: var(--panel2); overflow: hidden; margin: 8px 0 16px; }
+.bar > i { display: block; height: 100%; width: 22%; border-radius: 99px; background: linear-gradient(90deg, var(--accent2), var(--accent)); }
+.phase { display: flex; gap: 11px; align-items: center; padding: 8px 0; border-top: 1px solid var(--line-soft); }
+.phase:first-of-type { border-top: 0; }
+.phase .pn { font-family: var(--mono); font-size: 11px; color: var(--ink-mute); width: 20px; flex: none; }
+.phase .pt { flex: 1; min-width: 0; font-size: 13.5px; }
+.phase .pt small { color: var(--ink-mute); font-size: 11.5px; }
+.chip { font-family: var(--mono); font-size: 10px; letter-spacing: .04em; text-transform: uppercase; padding: 2px 8px;
+        border-radius: 99px; white-space: nowrap; display: inline-flex; gap: 5px; align-items: center; }
+.chip.done { color: var(--ok); background: var(--ok-bg); } .chip.done::before { content: "✓"; }
+.chip.next { color: var(--next); background: var(--next-bg); }
+.chip.plan { color: var(--ink-mute); background: var(--idle-bg); }
+
+/* donut + bars */
+.viz-row { display: flex; gap: 18px; align-items: center; }
+.donut { position: relative; width: 132px; height: 132px; flex: none; }
+.donut .center { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; }
+.donut .center b { font-family: var(--mono); font-size: 26px; font-weight: 700; display: block; }
+.donut .center span { font-size: 10.5px; color: var(--ink-mute); font-family: var(--mono); letter-spacing: .05em; }
+.leg { display: flex; flex-direction: column; gap: 9px; }
+.leg .row { display: flex; align-items: center; gap: 9px; font-size: 13px; }
+.leg .sw { width: 11px; height: 11px; border-radius: 3px; flex: none; }
+.leg .v { margin-left: auto; font-family: var(--mono); font-weight: 600; font-variant-numeric: tabular-nums; }
+
+.bars { display: flex; flex-direction: column; gap: 11px; }
+.brow { display: grid; grid-template-columns: 96px 1fr 54px; align-items: center; gap: 10px; }
+.brow .bn { font-size: 12.5px; color: var(--ink-dim); }
+.brow .bt { height: 15px; background: var(--panel2); border-radius: 5px; overflow: hidden; }
+.brow .bt > i { display: block; height: 100%; border-radius: 5px; }
+.brow .bv { font-family: var(--mono); font-size: 12px; text-align: right; font-variant-numeric: tabular-nums; color: var(--ink-dim); }
+.cap { font-size: 11.5px; color: var(--ink-mute); margin-top: 12px; font-family: var(--mono); }
+
+/* stacks */
+.stack-list { display: flex; flex-wrap: wrap; gap: 8px; }
+.tag-chip { font-family: var(--mono); font-size: 12px; padding: 6px 11px; border-radius: 8px; border: 1px solid var(--line);
+            background: var(--panel2); color: var(--ink-dim); }
+.tag-chip b { color: var(--ink); font-weight: 600; }
+
+.feat { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; }
+.feat .f { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 14px 15px; }
+.feat .f h3 { font-size: 14px; display: flex; gap: 8px; align-items: center; }
+.feat .f p { margin: 6px 0 0; font-size: 12.5px; color: var(--ink-dim); }
+.feat .f .ic { color: var(--accent); }
+
+.note { margin-top: 24px; background: color-mix(in srgb, var(--accent) 7%, var(--panel)); border: 1px solid color-mix(in srgb, var(--accent) 30%, var(--line));
+        border-radius: 12px; padding: 14px 16px; font-size: 13px; color: var(--ink-dim); display: flex; gap: 11px; }
+.note b { color: var(--ink); }
+footer { margin-top: 30px; padding-top: 16px; border-top: 1px solid var(--line-soft); display: flex; justify-content: space-between;
+         gap: 12px; flex-wrap: wrap; font-size: 12px; color: var(--ink-mute); font-family: var(--mono); }
+@media (prefers-reduced-motion: no-preference) { .bar > i, .brow .bt > i { transition: width .6s cubic-bezier(.2,.7,.3,1); } }
+@media (max-width: 480px) { .wrap { padding-inline: 16px; } .head .side { align-items: flex-start; } }
+</style>
+
+<div class="wrap">
+
+  <header class="head">
+    <div class="mark" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#42d4c4" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2 4 5v6c0 5 3.4 8.4 8 11 4.6-2.6 8-6 8-11V5l-8-3Z"/>
+        <path d="m9 12 2 2 4-4"/>
+      </svg>
+    </div>
+    <div class="title">
+      <div class="eyebrow">SOC Lab · Detection Engineering</div>
+      <h1>SentinelForge</h1>
+      <p class="tagline">A Python · PostgreSQL · Bash Security Operations Centre lab: ingest security telemetry, normalise it into one schema, and build toward threat detection and incident response — all local, all synthetic data.</p>
+    </div>
+    <div class="side">
+      <span class="pill live"><span class="dot"></span>Phases 1–2 / 9 · live</span>
+      <a class="repo" href="https://github.com/Lohit-18/Sentinel-Forge" target="_blank" rel="noopener">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.6 7.6 0 0 1 2-.27c.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
+        Lohit-18/Sentinel-Forge
+      </a>
+    </div>
+  </header>
+
+  <div class="badges" aria-label="project badges">
+    <span class="badge b-green"><b>tests</b><span>165 passing</span></span>
+    <span class="badge b-cyan"><b>CI</b><span>lint · licence · tests</span></span>
+    <span class="badge b-amber"><b>license</b><span>MIT</span></span>
+    <span class="badge b-blue"><b>python</b><span>3.11+</span></span>
+    <span class="badge b-blue"><b>postgres</b><span>16</span></span>
+    <span class="badge b-cyan"><b>lint</b><span>ruff</span></span>
+    <span class="badge b-green"><b>cost</b><span>$0 · OSS</span></span>
+    <span class="badge b-blue"><b>data</b><span>100% synthetic</span></span>
+  </div>
+
+  <section>
+    <div class="sec-label">At a glance</div>
+    <div class="kpis">
+      <div class="kpi"><div class="n">165</div><div class="l">Automated tests</div><div class="s">151 unit · 14 integration</div></div>
+      <div class="kpi alt"><div class="n">2.5K</div><div class="l">Lines of Python</div><div class="s">22 modules</div></div>
+      <div class="kpi alt"><div class="n">7</div><div class="l">CLI commands</div><div class="s">+ 11 Bash scripts</div></div>
+      <div class="kpi good"><div class="n">2/9</div><div class="l">Phases complete</div><div class="s">foundation + ingestion</div></div>
+      <div class="kpi good"><div class="n">100%</div><div class="l">Free / open source</div><div class="s">CI-enforced licences</div></div>
+      <div class="kpi"><div class="n">0</div><div class="l">Real data used</div><div class="s">synthetic only</div></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-label">Pipeline</div>
+    <div class="panel">
+      <div class="flow">
+        <div class="stage done"><span class="tag">done</span><div class="st-i">🧪</div><div class="st-n">Generate</div><div class="st-d">synthetic</div></div>
+        <div class="arrow">→</div>
+        <div class="stage done"><span class="tag">done</span><div class="st-i">🔄</div><div class="st-n">Normalise</div><div class="st-d">one schema</div></div>
+        <div class="arrow">→</div>
+        <div class="stage done"><span class="tag">done</span><div class="st-i">✓</div><div class="st-n">Validate</div><div class="st-d">+ dedup</div></div>
+        <div class="arrow">→</div>
+        <div class="stage done"><span class="tag">done</span><div class="st-i">🗄️</div><div class="st-n">Store</div><div class="st-d">PostgreSQL</div></div>
+        <div class="arrow">→</div>
+        <div class="stage todo"><span class="tag">next</span><div class="st-i">🔍</div><div class="st-n">Detect</div><div class="st-d">rules</div></div>
+        <div class="arrow">→</div>
+        <div class="stage todo"><span class="tag">plan</span><div class="st-i">🚨</div><div class="st-n">Alert</div><div class="st-d">+ incidents</div></div>
+        <div class="arrow">→</div>
+        <div class="stage todo"><span class="tag">plan</span><div class="st-i">📊</div><div class="st-n">Dashboard</div><div class="st-d">analyst UI</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="grid2">
+    <div>
+      <div class="sec-label">Build progress</div>
+      <div class="panel">
+        <div class="rm-head"><h3 style="font-size:15px">9-phase roadmap</h3><span class="rm-pct">22%</span></div>
+        <div class="bar"><i></i></div>
+        <div class="phase"><span class="pn">01</span><span class="pt">Foundation <small>· schema, config, least-privilege DB</small></span><span class="chip done">done</span></div>
+        <div class="phase"><span class="pn">02</span><span class="pt">Ingestion <small>· generate, normalise, validate, store, dedup</small></span><span class="chip done">done</span></div>
+        <div class="phase"><span class="pn">03</span><span class="pt">Detection engine <small>· rules + ATT&CK mapping</small></span><span class="chip next">next</span></div>
+        <div class="phase"><span class="pn">04</span><span class="pt">Correlation &amp; risk scoring</span><span class="chip plan">planned</span></div>
+        <div class="phase"><span class="pn">05</span><span class="pt">Alerts &amp; incidents <small>· audit trail</small></span><span class="chip plan">planned</span></div>
+        <div class="phase"><span class="pn">06</span><span class="pt">SOC dashboard <small>· Streamlit</small></span><span class="chip plan">planned</span></div>
+        <div class="phase"><span class="pn">07</span><span class="pt">SQL analytics &amp; automation</span><span class="chip plan">planned</span></div>
+        <div class="phase"><span class="pn">08</span><span class="pt">Threat intel &amp; anomaly detection</span><span class="chip plan">planned</span></div>
+        <div class="phase"><span class="pn">09</span><span class="pt">Hardening &amp; release</span><span class="chip plan">planned</span></div>
+      </div>
+    </div>
+
+    <div>
+      <div class="sec-label">Test suite</div>
+      <div class="panel">
+        <div class="viz-row">
+          <div class="donut">
+            <svg viewBox="0 0 42 42" width="132" height="132" role="img" aria-label="151 unit tests and 14 integration tests">
+              <circle cx="21" cy="21" r="15.9" fill="none" stroke="var(--panel2)" stroke-width="5"></circle>
+              <circle cx="21" cy="21" r="15.9" fill="none" stroke="var(--s1)" stroke-width="5"
+                      stroke-dasharray="91.5 8.5" stroke-dashoffset="25" stroke-linecap="round"></circle>
+              <circle cx="21" cy="21" r="15.9" fill="none" stroke="var(--s2)" stroke-width="5"
+                      stroke-dasharray="8.5 91.5" stroke-dashoffset="-66.5" stroke-linecap="round"></circle>
+            </svg>
+            <div class="center"><b>165</b><span>TESTS</span></div>
+          </div>
+          <div class="leg">
+            <div class="row"><span class="sw" style="background:var(--s1)"></span>Unit <span class="v">151</span></div>
+            <div class="row"><span class="sw" style="background:var(--s2)"></span>Integration <span class="v">14</span></div>
+            <div class="row mute" style="font-size:12px"><span class="sw" style="background:transparent"></span>run on real PostgreSQL</div>
+          </div>
+        </div>
+        <p class="cap">✓ 100% passing · lint + licence gate in CI on every push</p>
+      </div>
+
+      <div class="sec-label" style="margin-top:18px">Ingested event mix</div>
+      <div class="panel">
+        <div class="bars" id="bars"></div>
+        <p class="cap">Example: one generated day (seed 42) → 1,670 events, all schema-valid, unique fingerprints.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-label">Tech stack</div>
+    <div class="stack-list">
+      <span class="tag-chip"><b>Python</b> 3.11+</span>
+      <span class="tag-chip"><b>PostgreSQL</b> 16</span>
+      <span class="tag-chip"><b>Pydantic</b> 2</span>
+      <span class="tag-chip"><b>psycopg</b> 3</span>
+      <span class="tag-chip"><b>Bash</b></span>
+      <span class="tag-chip"><b>pytest</b></span>
+      <span class="tag-chip"><b>Ruff</b></span>
+      <span class="tag-chip"><b>GitHub Actions</b></span>
+      <span class="tag-chip"><b>YAML</b> + .env</span>
+      <span class="tag-chip mute">Streamlit · pandas · scikit-learn <span style="color:var(--ink-mute)">(planned)</span></span>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-label">Engineered like a SOC</div>
+    <div class="feat">
+      <div class="f"><h3><span class="ic">🔐</span> Least privilege</h3><p>The runtime role can only SELECT / INSERT / UPDATE — no DELETE or DDL, so investigation history can't be erased through the app.</p></div>
+      <div class="f"><h3><span class="ic">🧬</span> Duplicate-safe</h3><p>SHA-256 fingerprint + unique constraint: re-importing a file stores nothing. Verified 3,260 → 0 on re-ingest.</p></div>
+      <div class="f"><h3><span class="ic">🔄</span> Universal ingest</h3><p>JSON Lines or CSV; auto-maps other tools' field names and value synonyms onto one common schema.</p></div>
+      <div class="f"><h3><span class="ic">🕑</span> Strict UTC time</h3><p>Every timestamp normalised to UTC; zone-less times rejected, so correlation windows stay correct.</p></div>
+      <div class="f"><h3><span class="ic">🧾</span> Parameterised SQL</h3><p>Values bound as parameters; identifiers quoted; config names validated against a strict pattern.</p></div>
+      <div class="f"><h3><span class="ic">🎲</span> Reproducible</h3><p>Same seed → identical dataset, every run. Deterministic tests, comparable results.</p></div>
+    </div>
+  </section>
+
+  <div class="note">
+    <span style="color:var(--accent)">🛟</span>
+    <div><b>Defensive &amp; synthetic by design.</b> SentinelForge contains no malware or exploit code and never touches real systems. Example addresses use the reserved RFC 5737 / RFC 2606 ranges; the database binds to localhost only.</div>
+  </div>
+
+  <footer>
+    <span>SentinelForge v0.2.0 · MIT License</span>
+    <span>Built like an engineer · Tested like a defender · Documented like a professional</span>
+  </footer>
+</div>
+
+<script>
+  // Ingested event mix — one generated day (seed 42). Direct-labelled, so identity
+  // never rests on colour alone (dataviz relief rule).
+  const CATS = [
+    ["network", 1029, "var(--s1)"],
+    ["endpoint", 515, "var(--s3)"],
+    ["application", 89, "var(--s5)"],
+    ["authentication", 19, "var(--s2)"],
+    ["system", 18, "var(--s4)"],
+  ];
+  const max = Math.max(...CATS.map(c => c[1]));
+  const host = document.getElementById("bars");
+  for (const [name, value, color] of CATS) {
+    const row = document.createElement("div");
+    row.className = "brow";
+    const pct = Math.max(2, Math.round((value / max) * 100));
+    row.innerHTML =
+      `<span class="bn">${name}</span>` +
+      `<span class="bt"><i style="width:0;background:${color}" data-w="${pct}"></i></span>` +
+      `<span class="bv">${value.toLocaleString()}</span>`;
+    host.appendChild(row);
+  }
+  // Grow bars from a visible resting state after first paint.
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    document.querySelectorAll("#bars .bt > i").forEach(el => { el.style.width = el.dataset.w + "%"; });
+  }));
+</script>

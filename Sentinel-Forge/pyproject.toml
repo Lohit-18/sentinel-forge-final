@@ -1,0 +1,50 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sentinelforge"
+version = "0.2.0"
+description = "A Python, PostgreSQL and Bash-based SOC lab for security log ingestion, threat detection, event correlation, incident investigation and security analytics."
+readme = "README.md"
+requires-python = ">=3.11"
+# Runtime dependencies. Each one has a documented purpose in docs/architecture.md.
+dependencies = [
+    "pydantic>=2.7,<3",          # event schema validation
+    "pydantic-settings>=2.3,<3", # configuration from environment variables / .env
+    "psycopg[binary]>=3.2,<4",   # PostgreSQL driver (parameterised SQL)
+    "pyyaml>=6,<7",              # read the lab inventory (configs/lab_inventory.yml)
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8",  # test runner
+    "ruff>=0.6",  # linter + formatter
+]
+
+[project.scripts]
+sentinelforge = "sentinelforge.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra --strict-markers"
+markers = [
+    "integration: needs a running PostgreSQL server (enable with SF_RUN_INTEGRATION=1)",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+# E/W: style, F: real bugs, I: import order, B: likely bugs, UP: modern syntax,
+# S: security checks (bandit rules), SIM: simplifications
+select = ["E", "W", "F", "I", "B", "UP", "S", "SIM"]
+
+[tool.ruff.lint.per-file-ignores]
+# Tests use plain assert statements and throwaway passwords on purpose.
+"tests/**" = ["S101", "S105", "S106"]

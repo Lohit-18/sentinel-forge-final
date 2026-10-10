@@ -1,0 +1,10 @@
+{"event_time": "2026-10-10T09:00:00Z", "category": "authentication", "action": "logon", "outcome": "success", "source_type": "synthetic_auth", "source_host": "ws-01", "user": "alice.lab"}
+{"event_time": "2026-10-10T09:00:00", "category": "authentication", "action": "logon", "source_type": "synthetic_auth", "source_host": "ws-01", "user": "alice.lab"}
+{"event_time": "2026-10-10T09:00:00Z", "category": "authentication", "action": "logon", "source_type": "synthetic_auth", "source_host": "ws-01"}
+{"event_time": "2026-10-10T09:00:00Z", "category": "network", "action": "connection", "source_type": "synthetic_firewall", "source_host": "fw-01", "dst_ip": "999.1.1.1"}
+{"event_time": "2026-10-10T09:00:00Z", "category": "network", "action": "connection", "source_type": "synthetic_firewall", "source_host": "fw-01", "dst_ip": "192.0.2.10", "dst_port": 70000}
+{"event_time": "2026-10-10T09:00:00Z", "category": "authentication", "action": "logon", "source_type": "synthetic_auth", "source_host": "ws-01", "usr": "alice.lab"}
+this line is not json
+
+[1, 2, 3]
+{"event_time": "2026-10-10T09:00:00Z", "category": "network", "action": "connection", "source_type": "synthetic_firewall", "source_host": "fw-01"}

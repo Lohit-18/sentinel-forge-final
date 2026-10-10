@@ -1,0 +1,28 @@
+# PostgreSQL for the SentinelForge lab (optional: you can install PostgreSQL
+# natively instead; see docs/installation.md).
+#
+# Values come from .env. Start with:  bash scripts/start_lab.sh
+name: sentinelforge
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${SF_DB_NAME:-sentinelforge}
+      POSTGRES_USER: ${SF_DB_ADMIN_USER:-sentinelforge_admin}
+      POSTGRES_PASSWORD: ${SF_DB_ADMIN_PASSWORD:?Set SF_DB_ADMIN_PASSWORD in .env (run bash scripts/setup.sh)}
+    ports:
+      # Bind to 127.0.0.1 only, so the database is not reachable from other
+      # machines on your network.
+      - "127.0.0.1:${SF_DB_PORT:-5432}:5432"
+    volumes:
+      - sentinelforge_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\""]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+    restart: unless-stopped
+
+volumes:
+  sentinelforge_pgdata:
