@@ -8,7 +8,6 @@ A **Python · PostgreSQL · Bash** Security Operations Centre (SOC) lab that ing
 
 <br>
 
-[![CI](https://github.com/Lohit-18/Sentinel-Forge/actions/workflows/tests.yml/badge.svg)](https://github.com/Lohit-18/Sentinel-Forge/actions/workflows/tests.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-yellow.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![PostgreSQL 16](https://img.shields.io/badge/PostgreSQL-16-336791?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
